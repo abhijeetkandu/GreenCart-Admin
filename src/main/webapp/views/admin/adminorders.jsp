@@ -3,7 +3,7 @@
 <%
     String admin = (String) session.getAttribute("admin");
     if (admin == null) {
-        response.sendRedirect(request.getContextPath() + "/views/adminlogin.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/admin/adminlogin.jsp");
         return;
     }
 
@@ -20,17 +20,17 @@
     st = conn.prepareStatement("SELECT COUNT(*) FROM orders WHERE status='Cancelled'"); rs = st.executeQuery(); if(rs.next()) cancelledOrders=rs.getInt(1); rs.close(); st.close();
     st = conn.prepareStatement("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE status='Delivered'"); rs = st.executeQuery(); if(rs.next()) totalRev=rs.getDouble(1); rs.close(); st.close();
 
-    // Filter by status
+    // Filter by status — uses PreparedStatement to avoid SQL injection
     String filterStatus = request.getParameter("status");
     if(filterStatus == null) filterStatus = "all";
 
-    String orderQuery;
+    PreparedStatement ordPs;
     if("all".equals(filterStatus)) {
-        orderQuery = "SELECT o.*, r.name as cname, r.email as cemail FROM orders o LEFT JOIN register r ON o.user_id=r.id ORDER BY o.created_at DESC";
+        ordPs = conn.prepareStatement("SELECT o.*, r.name as cname, r.email as cemail FROM orders o LEFT JOIN register r ON o.user_id=r.id ORDER BY o.created_at DESC");
     } else {
-        orderQuery = "SELECT o.*, r.name as cname, r.email as cemail FROM orders o LEFT JOIN register r ON o.user_id=r.id WHERE o.status='" + filterStatus + "' ORDER BY o.created_at DESC";
+        ordPs = conn.prepareStatement("SELECT o.*, r.name as cname, r.email as cemail FROM orders o LEFT JOIN register r ON o.user_id=r.id WHERE o.status=? ORDER BY o.created_at DESC");
+        ordPs.setString(1, filterStatus);
     }
-    PreparedStatement ordPs = conn.prepareStatement(orderQuery);
     ResultSet ordRs = ordPs.executeQuery();
 %>
 <!DOCTYPE html>
@@ -51,8 +51,8 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Instrument Sans',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; }
 
-        /* SIDEBAR (same pattern) */
-        .sidebar { position:fixed; left:0; top:0; bottom:0; width:240px; background:var(--forest); display:flex; flex-direction:column; z-index:200; }
+        /* SIDEBAR */
+        .sidebar { position:fixed; left:0; top:0; bottom:0; width:240px; background:var(--forest); display:flex; flex-direction:column; z-index:200; transition:transform 0.3s ease; }
         .sidebar-logo { padding:1.5rem 1.5rem 1rem; display:flex; align-items:center; gap:0.7rem; border-bottom:1px solid rgba(255,255,255,0.07); }
         .logo-mark { width:36px; height:36px; background:linear-gradient(135deg,var(--mint),var(--sage)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
         .logo-txt { font-family:'Syne',sans-serif; font-weight:800; color:#fff; font-size:1.1rem; }
@@ -73,9 +73,13 @@
         .btn-logout { display:flex; align-items:center; justify-content:center; gap:0.5rem; width:100%; padding:0.55rem; background:rgba(232,96,60,0.1); color:var(--ember); border:1px solid rgba(232,96,60,0.2); border-radius:8px; font-size:0.82rem; font-weight:600; text-decoration:none; transition:all 0.2s; }
         .btn-logout:hover { background:var(--ember); color:#fff; }
 
+        /* OVERLAY */
+        .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:199; }
+
         .main { margin-left:240px; min-height:100vh; }
         .topbar { background:var(--card); border-bottom:1px solid var(--border); padding:0.9rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
         .topbar-title { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:var(--ink); }
+        .btn-hamburger { display:none; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--ink); }
         .btn-view-store { display:flex; align-items:center; gap:0.5rem; background:var(--frost); color:var(--leaf); border:1px solid rgba(30,92,56,0.15); border-radius:8px; padding:0.5rem 1rem; font-size:0.82rem; font-weight:600; text-decoration:none; transition:all 0.2s; }
         .btn-view-store:hover { background:var(--leaf); color:#fff; }
         .page-content { padding:2rem; }
@@ -119,9 +123,6 @@
         .btn-upd { background:var(--forest); color:#fff; border:none; border-radius:7px; padding:0.3rem 0.75rem; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'Instrument Sans',sans-serif; }
         .btn-upd:hover { background:var(--leaf); }
 
-        .btn-details { background:var(--frost); color:var(--leaf); border:1px solid rgba(30,92,56,0.2); border-radius:7px; padding:0.3rem 0.7rem; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'Instrument Sans',sans-serif; text-decoration:none; }
-        .btn-details:hover { background:var(--leaf); color:#fff; }
-
         .text-muted-sm { font-size:0.75rem; color:var(--mist); }
         .empty-state { text-align:center; padding:3rem 2rem; color:var(--mist); }
         .empty-state .icon { font-size:2.5rem; margin-bottom:0.8rem; }
@@ -129,21 +130,45 @@
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         .sc { animation:fadeUp 0.3s ease forwards; }
 
-        /* ORDER DETAIL MODAL */
-        .modal-content { border-radius:18px; border:none; }
-        .modal-hdr { background:var(--forest); padding:1.2rem 1.5rem; border-radius:18px 18px 0 0; display:flex; align-items:center; justify-content:space-between; }
-        .modal-hdr h5 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#fff; margin:0; }
-        .modal-hdr .btn-close { filter:invert(1); opacity:0.7; }
-        .info-row { display:flex; justify-content:space-between; padding:0.6rem 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
-        .info-row:last-child { border-bottom:none; }
-        .info-key { color:var(--mist); font-weight:500; }
-        .info-val { font-weight:600; color:var(--ink); }
+        /* ── MOBILE RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display:block; }
+            .main { margin-left: 0; }
+            .btn-hamburger { display:block; }
+            .page-content { padding: 1rem; }
+            .topbar { padding: 0.75rem 1rem; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            .stats-grid .stat-card:last-child { grid-column: span 2; }
+            .filter-tabs { gap: 0.3rem; }
+            .filter-tab { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
+            /* Hide less-important columns on mobile */
+            .gc-table th:nth-child(3),
+            .gc-table td:nth-child(3),
+            .gc-table th:nth-child(6),
+            .gc-table td:nth-child(6),
+            .gc-table th:nth-child(7),
+            .gc-table td:nth-child(7) { display: none; }
+            .gc-table th, .gc-table td { padding: 0.6rem 0.5rem; font-size: 0.78rem; }
+            .status-sel { font-size: 0.72rem; padding: 0.25rem 0.3rem; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .stat-value { font-size: 1.2rem; }
+            /* Also hide payment on very small screens */
+            .gc-table th:nth-child(5),
+            .gc-table td:nth-child(5) { display: none; }
+        }
     </style>
 </head>
 <body>
 
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <div class="logo-mark">🌿</div>
         <div class="logo-txt">Green<span>Cart</span> <span class="admin-pill">Admin</span></div>
@@ -158,6 +183,7 @@
             <% if(pendingOrders > 0) { %><span class="nav-badge"><%= pendingOrders %></span><% } %>
         </a>
         <a href="<%=request.getContextPath()%>/views/admin/adminusers.jsp" class="nav-item"><span class="icon">👥</span> Customers</a>
+        <a href="<%=request.getContextPath()%>/views/admin/adminanalytics.jsp" class="nav-item"><span class="icon">📈</span> Analytics</a>
     </nav>
     <div class="sidebar-footer">
         <div class="admin-info">
@@ -170,8 +196,11 @@
 
 <div class="main">
     <div class="topbar">
-        <div class="topbar-title">🧾 Manage Orders</div>
-        <a href="<%=request.getContextPath()%>/views/home.jsp" class="btn-view-store" target="_blank">🌐 View Store</a>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+            <button class="btn-hamburger" onclick="openSidebar()">☰</button>
+            <div class="topbar-title">🧾 Manage Orders</div>
+        </div>
+        <a href="<%=request.getContextPath()%>/views/user/home.jsp" class="btn-view-store" target="_blank">🌐 View Store</a>
     </div>
 
     <div class="page-content">
@@ -202,11 +231,11 @@
 
         <!-- FILTER TABS -->
         <div class="filter-tabs">
-            <a href="?status=all" class="filter-tab <%= "all".equals(filterStatus) ? "active" : "" %>">All Orders</a>
-            <a href="?status=Pending" class="filter-tab <%= "Pending".equals(filterStatus) ? "active" : "" %>">⏳ Pending</a>
+            <a href="?status=all"        class="filter-tab <%= "all".equals(filterStatus)        ? "active" : "" %>">All Orders</a>
+            <a href="?status=Pending"    class="filter-tab <%= "Pending".equals(filterStatus)    ? "active" : "" %>">⏳ Pending</a>
             <a href="?status=Processing" class="filter-tab <%= "Processing".equals(filterStatus) ? "active" : "" %>">🔄 Processing</a>
-            <a href="?status=Delivered" class="filter-tab <%= "Delivered".equals(filterStatus) ? "active" : "" %>">✅ Delivered</a>
-            <a href="?status=Cancelled" class="filter-tab <%= "Cancelled".equals(filterStatus) ? "active" : "" %>">❌ Cancelled</a>
+            <a href="?status=Delivered"  class="filter-tab <%= "Delivered".equals(filterStatus)  ? "active" : "" %>">✅ Delivered</a>
+            <a href="?status=Cancelled"  class="filter-tab <%= "Cancelled".equals(filterStatus)  ? "active" : "" %>">❌ Cancelled</a>
         </div>
 
         <!-- ORDERS TABLE -->
@@ -297,5 +326,9 @@
     </div>
 </div>
 
+<script>
+    function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
+</script>
 </body>
 </html>
