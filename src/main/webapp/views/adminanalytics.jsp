@@ -253,13 +253,13 @@
                         <p style="color:var(--text-muted);font-size:0.85rem;">No data yet</p>
                     <% } else {
                         int maxPage = Integer.parseInt(topPages.get(0)[1]);
-                        for (String[] page : topPages) {
-                            int cnt = Integer.parseInt(page[1]);
+                        for (String[] pageItem : topPages) {
+                            int cnt = Integer.parseInt(pageItem[1]);
                             int pct = maxPage > 0 ? (cnt * 100 / maxPage) : 0;
                     %>
                     <div class="bar-row">
                         <div class="bar-label">
-                            <span><%= page[0] %></span>
+                            <span><%= pageItem[0] %></span>
                             <span style="color:var(--text-muted)"><%= cnt %></span>
                         </div>
                         <div class="bar-track"><div class="bar-fill" style="width:<%= pct %>%"></div></div>
