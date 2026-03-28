@@ -526,7 +526,7 @@
         <a href="<%=request.getContextPath()%>/views/admin/adminhome.jsp" class="nav-item active">
             <span class="icon">📊</span> Dashboard
         </a>
-
+        <a href="<%=request.getContextPath()%>/views/adminanalytics.jsp" class="btn-nav">📊 Analytics</a>
         <div class="nav-section-label">Catalog</div>
         <a href="#products-section" class="nav-item" onclick="scrollToSection('products-section')">
             <span class="icon">📦</span> Products
