@@ -183,10 +183,10 @@
             <span class="admin-tag">Admin</span>
         </div>
         <div>
-            <a href="<%=request.getContextPath()%>/views/adminhome.jsp"    class="btn-nav">📦 Products</a>
-            <a href="<%=request.getContextPath()%>/views/adminorders.jsp"  class="btn-nav">🧾 Orders</a>
-            <a href="<%=request.getContextPath()%>/views/adminusers.jsp"   class="btn-nav">👥 Users</a>
-            <a href="<%=request.getContextPath()%>/views/home.jsp"         class="btn-nav">🌐 Store</a>
+            <a href="<%=request.getContextPath()%>/views/admin/adminhome.jsp"    class="btn-nav">📦 Products</a>
+            <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp"  class="btn-nav">🧾 Orders</a>
+            <a href="<%=request.getContextPath()%>/views/admin/adminusers.jsp"   class="btn-nav">👥 Users</a>
+            <a href="<%=request.getContextPath()%>/views/user/home.jsp"         class="btn-nav">🌐 Store</a>
         </div>
     </div>
 </nav>
