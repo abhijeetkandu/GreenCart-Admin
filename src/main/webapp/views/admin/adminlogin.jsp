@@ -4,7 +4,7 @@
     // Redirect if already logged in
     String admin = (String) session.getAttribute("admin");
     if (admin != null) {
-        response.sendRedirect(request.getContextPath() + "/views/adminhome.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/admin/adminhome.jsp");
         return;
     }
 %>

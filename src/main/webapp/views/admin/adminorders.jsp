@@ -150,14 +150,14 @@
     </div>
     <nav class="sidebar-nav">
         <div class="nav-section-label">Overview</div>
-        <a href="<%=request.getContextPath()%>/views/adminhome.jsp" class="nav-item"><span class="icon">📊</span> Dashboard</a>
+        <a href="<%=request.getContextPath()%>/views/admin/adminhome.jsp" class="nav-item"><span class="icon">📊</span> Dashboard</a>
         <div class="nav-section-label">Catalog</div>
-        <a href="<%=request.getContextPath()%>/views/adminhome.jsp#products-section" class="nav-item"><span class="icon">📦</span> Products</a>
+        <a href="<%=request.getContextPath()%>/views/admin/adminhome.jsp#products-section" class="nav-item"><span class="icon">📦</span> Products</a>
         <div class="nav-section-label">Operations</div>
-        <a href="<%=request.getContextPath()%>/views/adminorders.jsp" class="nav-item active"><span class="icon">🧾</span> Orders
+        <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp" class="nav-item active"><span class="icon">🧾</span> Orders
             <% if(pendingOrders > 0) { %><span class="nav-badge"><%= pendingOrders %></span><% } %>
         </a>
-        <a href="<%=request.getContextPath()%>/views/adminusers.jsp" class="nav-item"><span class="icon">👥</span> Customers</a>
+        <a href="<%=request.getContextPath()%>/views/admin/adminusers.jsp" class="nav-item"><span class="icon">👥</span> Customers</a>
     </nav>
     <div class="sidebar-footer">
         <div class="admin-info">
