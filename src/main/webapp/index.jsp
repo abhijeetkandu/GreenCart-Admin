@@ -8,7 +8,7 @@
     </head>
     <body>
         <%
-            response.sendRedirect("views/user/login.jsp");
+            response.sendRedirect("views/admin/adminlogin.jsp");
         %>
     </body>
 </html>

@@ -22,7 +22,7 @@ public class Adminlogoutservlet extends HttpServlet {
             // Only invalidate if no user session also active (since separate app, just invalidate)
             session.invalidate();
         }
-        response.sendRedirect(request.getContextPath() + "/views/adminlogin.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/admin/adminlogin.jsp");
     }
 
     @Override
