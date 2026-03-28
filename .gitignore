@@ -1,0 +1,15 @@
+# Maven build output
+target/
+
+# IntelliJ files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Local images (not needed in admin)
+src/main/webapp/images/
+
+# OS files
+.DS_Store
+Thumbs.db
