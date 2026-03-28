@@ -13,9 +13,31 @@ import java.sql.*;
 @WebServlet("/track")
 public class TrackingServlet extends HttpServlet {
 
+    // ── User site origin allowed to post tracking data ─────────────
+    private static final String ALLOWED_ORIGIN = "https://greencart-e-commerce-1.onrender.com";
+
+    // ── Add CORS headers to every response ─────────────────────────
+    private void addCorsHeaders(HttpServletResponse resp) {
+        resp.setHeader("Access-Control-Allow-Origin",      ALLOWED_ORIGIN);
+        resp.setHeader("Access-Control-Allow-Methods",     "POST, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers",     "Content-Type");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
+    }
+
+    // ── Handle preflight OPTIONS request from browser ───────────────
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        addCorsHeaders(resp);
+        resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        // CORS headers must be first on every POST
+        addCorsHeaders(resp);
 
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("UTF-8");
@@ -39,7 +61,6 @@ public class TrackingServlet extends HttpServlet {
 
             // ── SESSION START ──────────────────────────────────────────
             if ("session_start".equals(action)) {
-                // Check if session already recorded
                 PreparedStatement checkPs = conn.prepareStatement(
                         "SELECT id FROM user_sessions WHERE session_id=?");
                 checkPs.setString(1, sessionId);
