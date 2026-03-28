@@ -4,7 +4,7 @@
 <%
     String admin = (String) session.getAttribute("admin");
     if (admin == null) {
-        response.sendRedirect(request.getContextPath() + "/views/adminlogin.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/admin/adminlogin.jsp");
         return;
     }
 
@@ -523,7 +523,7 @@
 
     <nav class="sidebar-nav">
         <div class="nav-section-label">Overview</div>
-        <a href="<%=request.getContextPath()%>/views/adminhome.jsp" class="nav-item active">
+        <a href="<%=request.getContextPath()%>/views/admin/adminhome.jsp" class="nav-item active">
             <span class="icon">📊</span> Dashboard
         </a>
 
@@ -536,11 +536,11 @@
         </a>
 
         <div class="nav-section-label">Operations</div>
-        <a href="<%=request.getContextPath()%>/views/adminorders.jsp" class="nav-item">
+        <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp" class="nav-item">
             <span class="icon">🧾</span> Orders
             <% if(pendingOrders > 0) { %><span class="nav-badge"><%= pendingOrders %></span><% } %>
         </a>
-        <a href="<%=request.getContextPath()%>/views/adminusers.jsp" class="nav-item">
+        <a href="<%=request.getContextPath()%>/views/admin/adminusers.jsp" class="nav-item">
             <span class="icon">👥</span> Customers
         </a>
     </nav>
@@ -567,7 +567,7 @@
     <div class="topbar">
         <div class="topbar-title">Dashboard Overview</div>
         <div class="topbar-right">
-            <a href="<%=request.getContextPath()%>/views/home.jsp" class="btn-view-store" target="_blank">
+            <a href="<%=request.getContextPath()%>/views/user/home.jsp" class="btn-view-store" target="_blank">
                 🌐 View Store
             </a>
         </div>
@@ -617,7 +617,7 @@
         <div class="sc" style="animation-delay:0.1s">
             <div class="sc-head">
                 <div class="sc-title">🧾 Recent Orders</div>
-                <a href="<%=request.getContextPath()%>/views/adminorders.jsp" class="link-all">View all orders →</a>
+                <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp" class="link-all">View all orders →</a>
             </div>
             <div style="overflow-x:auto">
                 <table class="gc-table">
