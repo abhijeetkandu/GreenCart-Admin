@@ -449,12 +449,8 @@
             </button>
             <div class="topbar-title">Dashboard Overview</div>
         </div>
-        <div class="topbar-right">
-            <%-- ✅ FIXED PATH --%>
-            <a href="<%=request.getContextPath()%>/views/user/home.jsp" class="btn-view-store" target="_blank">
-                🌐 <span>View Store</span>
-            </a>
-        </div>
+
+
     </div>
 
     <div class="page-content">
