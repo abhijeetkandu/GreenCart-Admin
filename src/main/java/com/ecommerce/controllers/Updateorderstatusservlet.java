@@ -26,7 +26,7 @@ public class Updateorderstatusservlet extends HttpServlet {
             admin = (String) session.getAttribute("admin");
         }
         if (admin == null) {
-            response.sendRedirect(request.getContextPath() + "/views/adminlogin.jsp");
+            response.sendRedirect(request.getContextPath() + "/views/admin/adminlogin.jsp");
             return;
         }
 
@@ -34,13 +34,13 @@ public class Updateorderstatusservlet extends HttpServlet {
         String newStatus  = request.getParameter("status");
 
         if (orderIdStr == null || newStatus == null || orderIdStr.isBlank() || newStatus.isBlank()) {
-            response.sendRedirect(request.getContextPath() + "/views/adminorders.jsp?error=invalid");
+            response.sendRedirect(request.getContextPath() + "/views/admin/adminorders.jsp?error=invalid");
             return;
         }
 
         // Validate status value
         if (!newStatus.matches("Pending|Processing|Delivered|Cancelled")) {
-            response.sendRedirect(request.getContextPath() + "/views/adminorders.jsp?error=badstatus");
+            response.sendRedirect(request.getContextPath() + "/views/admin/adminorders.jsp?error=badstatus");
             return;
         }
 
@@ -56,7 +56,7 @@ public class Updateorderstatusservlet extends HttpServlet {
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/views/adminorders.jsp?error=db");
+            response.sendRedirect(request.getContextPath() + "/views/admin/adminorders.jsp?error=db");
             return;
         }
 
@@ -65,7 +65,7 @@ public class Updateorderstatusservlet extends HttpServlet {
         if (ref != null && ref.contains("status=")) {
             response.sendRedirect(ref);
         } else {
-            response.sendRedirect(request.getContextPath() + "/views/adminorders.jsp?updated=" + orderIdStr);
+            response.sendRedirect(request.getContextPath() + "/views/admin/adminorders.jsp?updated=" + orderIdStr);
         }
     }
 }

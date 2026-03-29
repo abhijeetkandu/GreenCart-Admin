@@ -244,7 +244,7 @@
             </button>
             <div class="tb-title">📈 Analytics</div>
         </div>
-        <a href="<%=request.getContextPath()%>/views/user/home.jsp" class="btn-store" target="_blank">🌐 View Store</a>
+
     </div>
 
     <div class="content">
@@ -254,7 +254,7 @@
             <div class="hero-left">
                 <div class="hero-eyebrow">GreenCart · Store Overview</div>
                 <div class="hero-title">Your store at<br>a glance 🌿</div>
-                <div class="hero-sub">Real-time order data and page engagement metrics for your admin dashboard.</div>
+                <div class="hero-sub">Real-time order data and page engagement metrics for admin dashboard.</div>
             </div>
             <div class="hero-right">
                 <div class="hero-stat">

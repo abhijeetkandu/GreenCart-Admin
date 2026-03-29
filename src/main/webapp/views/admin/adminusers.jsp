@@ -174,7 +174,6 @@
             <button class="btn-hamburger" onclick="openSidebar()">☰</button>
             <div class="topbar-title">👥 Customers & Users</div>
         </div>
-        <a href="<%=request.getContextPath()%>/views/user/home.jsp" class="btn-view-store" target="_blank">🌐 View Store</a>
     </div>
 
     <div class="page-content">
