@@ -11,7 +11,7 @@
     PreparedStatement ps;
     ResultSet rs;
 
-    // ── Total Sessions Today ──
+    // ── Sessions Today ──
     ps = conn.prepareStatement("SELECT COUNT(*) FROM user_sessions WHERE DATE(started_at)=CURDATE()");
     rs = ps.executeQuery();
     int todaySessions = rs.next() ? rs.getInt(1) : 0;
@@ -30,7 +30,7 @@
     rs.close(); ps.close();
 
     // ── Orders ──
-    ps = conn.prepareStatement("SELECT COUNT(*) FROM user_events WHERE event_type='order_placed' OR event_type='order'");
+    ps = conn.prepareStatement("SELECT COUNT(*) FROM user_events WHERE event_type='order_completed'");
     rs = ps.executeQuery();
     int totalOrders = rs.next() ? rs.getInt(1) : 0;
     rs.close(); ps.close();
@@ -51,7 +51,7 @@
     rs.close(); ps.close();
 
     // ── Top Pages ──
-    ps = conn.prepareStatement("SELECT IFNULL(page_url,'Unknown'), COUNT(*) FROM user_events GROUP BY page_url ORDER BY COUNT(*) DESC LIMIT 5");
+    ps = conn.prepareStatement("SELECT page_url, COUNT(*) FROM user_events GROUP BY page_url ORDER BY COUNT(*) DESC LIMIT 5");
     rs = ps.executeQuery();
     List<String[]> topPages = new ArrayList<>();
     while(rs.next()){
@@ -60,7 +60,7 @@
     rs.close(); ps.close();
 
     // ── Top Products ──
-    ps = conn.prepareStatement("SELECT IFNULL(event_data,'Unknown'), COUNT(*) FROM user_events WHERE event_data IS NOT NULL GROUP BY event_data ORDER BY COUNT(*) DESC LIMIT 5");
+    ps = conn.prepareStatement("SELECT event_data, COUNT(*) FROM user_events WHERE event_type='product_click' GROUP BY event_data ORDER BY COUNT(*) DESC LIMIT 5");
     rs = ps.executeQuery();
     List<String[]> topProducts = new ArrayList<>();
     while(rs.next()){
@@ -69,7 +69,7 @@
     rs.close(); ps.close();
 
     // ── Top Cart ──
-    ps = conn.prepareStatement("SELECT IFNULL(event_data,'Unknown'), COUNT(*) FROM user_events GROUP BY event_data ORDER BY COUNT(*) DESC LIMIT 5");
+    ps = conn.prepareStatement("SELECT event_data, COUNT(*) FROM user_events WHERE event_type='add_to_cart' GROUP BY event_data ORDER BY COUNT(*) DESC LIMIT 5");
     rs = ps.executeQuery();
     List<String[]> topCart = new ArrayList<>();
     while(rs.next()){
@@ -78,40 +78,35 @@
     rs.close(); ps.close();
 
     // ── Avg Time ──
-    ps = conn.prepareStatement("SELECT AVG(time_on_page) FROM user_events WHERE time_on_page > 0");
+    ps = conn.prepareStatement("SELECT AVG(time_on_page) FROM user_events WHERE event_type='time_spent'");
     rs = ps.executeQuery();
     double avgTime = rs.next() ? rs.getDouble(1) : 0;
     rs.close(); ps.close();
 
-    // ── Recent Sessions ──
-    ps = conn.prepareStatement("SELECT * FROM user_sessions ORDER BY started_at DESC LIMIT 10");
+    // ── Conversion Funnel ──
+    int views=0, clicks=0, cart=0, orders=0;
+
+    ps = conn.prepareStatement("SELECT COUNT(*) FROM user_events WHERE event_type='page_view'");
     rs = ps.executeQuery();
-    List<Object[]> recentSessions = new ArrayList<>();
-    while(rs.next()){
-        String sid = rs.getString("session_id");
-        if(sid == null) sid = "N/A";
-        else if(sid.length()>8) sid = sid.substring(0,8)+"...";
-
-        recentSessions.add(new Object[]{
-            sid,
-            rs.getString("user_email"),
-            rs.getString("device_type"),
-            rs.getString("ip_address"),
-            rs.getInt("duration_seconds"),
-            rs.getTimestamp("started_at")
-        });
-    }
+    if(rs.next()) views = rs.getInt(1);
     rs.close(); ps.close();
-    conn.close();
 
-    // Chart data
-    StringBuilder deviceLabels = new StringBuilder();
-    StringBuilder deviceData = new StringBuilder();
-    for(Map.Entry<String,Integer> e : deviceMap.entrySet()){
-        if(deviceLabels.length()>0){ deviceLabels.append(","); deviceData.append(","); }
-        deviceLabels.append("'").append(e.getKey()).append("'");
-        deviceData.append(e.getValue());
-    }
+    ps = conn.prepareStatement("SELECT COUNT(*) FROM user_events WHERE event_type='product_click'");
+    rs = ps.executeQuery();
+    if(rs.next()) clicks = rs.getInt(1);
+    rs.close(); ps.close();
+
+    ps = conn.prepareStatement("SELECT COUNT(*) FROM user_events WHERE event_type='add_to_cart'");
+    rs = ps.executeQuery();
+    if(rs.next()) cart = rs.getInt(1);
+    rs.close(); ps.close();
+
+    ps = conn.prepareStatement("SELECT COUNT(*) FROM user_events WHERE event_type='order_completed'");
+    rs = ps.executeQuery();
+    if(rs.next()) orders = rs.getInt(1);
+    rs.close(); ps.close();
+
+    conn.close();
 %>
 <!DOCTYPE html>
 <html lang="en">
