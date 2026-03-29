@@ -289,7 +289,7 @@
             </button>
             <div class="tb-title">📈 Analytics</div>
         </div>
-        <a href="<%=request.getContextPath()%>/views/home.jsp" class="btn-store" target="_blank">🌐 View Store</a>
+
     </div>
 
     <div class="content">
