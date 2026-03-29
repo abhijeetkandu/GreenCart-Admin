@@ -93,7 +93,6 @@
             letter-spacing:1.2px; text-transform:uppercase;
             padding:0.15rem 0.5rem; border-radius:50px; margin-left:4px;
         }
-
         .sidebar-nav { flex:1; padding:1rem 0.8rem; overflow-y:auto; }
         .nav-section-label {
             font-size:0.65rem; font-weight:700;
@@ -117,11 +116,7 @@
             padding:0.1rem 0.45rem; border-radius:50px;
             min-width:18px; text-align:center;
         }
-
-        .sidebar-footer {
-            padding:1rem;
-            border-top:1px solid rgba(255,255,255,0.07);
-        }
+        .sidebar-footer { padding:1rem; border-top:1px solid rgba(255,255,255,0.07); }
         .admin-info {
             display:flex; align-items:center; gap:0.7rem;
             padding:0.7rem; border-radius:10px;
@@ -170,19 +165,7 @@
             color:var(--ink); transition:background 0.2s;
         }
         .btn-menu:hover { background:var(--bg); }
-        .topbar-title {
-            font-family:'Syne',sans-serif;
-            font-size:1.15rem; font-weight:700; color:var(--ink);
-        }
-        .topbar-right { display:flex; align-items:center; gap:1rem; }
-        .btn-view-store {
-            display:flex; align-items:center; gap:0.5rem;
-            background:var(--frost); color:var(--leaf);
-            border:1px solid rgba(30,92,56,0.15); border-radius:8px;
-            padding:0.5rem 1rem; font-size:0.82rem; font-weight:600;
-            text-decoration:none; transition:all 0.2s;
-        }
-        .btn-view-store:hover { background:var(--leaf); color:#fff; }
+        .topbar-title { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:var(--ink); }
 
         .page-content { padding:1.5rem 2rem; }
 
@@ -200,16 +183,13 @@
             animation:fadeUp 0.4s ease forwards;
         }
         .stat-card::before {
-            content:''; position:absolute;
-            right:-20px; top:-20px;
-            width:80px; height:80px;
-            border-radius:50%; opacity:0.06;
+            content:''; position:absolute; right:-20px; top:-20px;
+            width:80px; height:80px; border-radius:50%; opacity:0.06;
         }
         .stat-card.green::before { background:var(--mint); }
         .stat-card.orange::before { background:var(--ember); }
         .stat-card.blue::before { background:var(--sky); }
         .stat-card.gold::before { background:var(--gold); }
-
         .stat-icon {
             width:40px; height:40px; border-radius:10px;
             display:flex; align-items:center; justify-content:center;
@@ -219,18 +199,9 @@
         .stat-icon.orange { background:#fff0ec; }
         .stat-icon.blue   { background:#edf3ff; }
         .stat-icon.gold   { background:#fff8e6; }
-
-        .stat-value {
-            font-family:'Syne',sans-serif;
-            font-size:1.8rem; font-weight:800;
-            color:var(--ink); line-height:1;
-        }
+        .stat-value { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:var(--ink); line-height:1; }
         .stat-label { font-size:0.78rem; color:var(--mist); font-weight:500; margin-top:0.3rem; }
-        .stat-delta {
-            position:absolute; top:1.2rem; right:1.2rem;
-            font-size:0.7rem; font-weight:600;
-            padding:0.15rem 0.5rem; border-radius:50px;
-        }
+        .stat-delta { position:absolute; top:1.2rem; right:1.2rem; font-size:0.7rem; font-weight:600; padding:0.15rem 0.5rem; border-radius:50px; }
         .stat-delta.up   { background:#e6f9ef; color:var(--sage); }
         .stat-delta.warn { background:#fff0ec; color:var(--ember); }
 
@@ -264,7 +235,6 @@
             box-shadow:0 0 0 3px rgba(45,134,83,0.1) !important;
         }
         .divider-line { border:none; border-top:1.5px solid var(--border); margin:1.2rem 0; }
-
         .btn-primary-gc {
             background:var(--forest); color:#fff; border:none;
             border-radius:10px; padding:0.7rem 1.8rem;
@@ -282,13 +252,9 @@
             padding:0.75rem 1rem; font-size:0.72rem;
             font-weight:700; text-transform:uppercase;
             letter-spacing:0.8px; color:var(--mist);
-            text-align:left; border-bottom:1px solid var(--border);
-            white-space:nowrap;
+            text-align:left; border-bottom:1px solid var(--border); white-space:nowrap;
         }
-        .gc-table td {
-            padding:0.9rem 1rem; font-size:0.87rem;
-            border-bottom:1px solid #f0f4f2; vertical-align:middle;
-        }
+        .gc-table td { padding:0.9rem 1rem; font-size:0.87rem; border-bottom:1px solid #f0f4f2; vertical-align:middle; }
         .gc-table tbody tr:hover { background:#fafffe; }
         .gc-table tbody tr:last-child td { border-bottom:none; }
 
@@ -299,12 +265,10 @@
         .badge-stock-ok  { background:#e6f9ef; color:var(--sage); font-size:0.75rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:50px; white-space:nowrap; }
         .badge-stock-low { background:#fff8e6; color:#b07d00; font-size:0.75rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:50px; white-space:nowrap; }
         .badge-stock-out { background:#fff0ec; color:var(--ember); font-size:0.75rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:50px; white-space:nowrap; }
-
         .ord-pending    { background:#fff8e6; color:#b07d00; font-size:0.72rem; font-weight:700; padding:0.2rem 0.65rem; border-radius:50px; border:1px solid #f0d080; white-space:nowrap; }
         .ord-processing { background:#edf3ff; color:var(--sky); font-size:0.72rem; font-weight:700; padding:0.2rem 0.65rem; border-radius:50px; border:1px solid #c0cef5; white-space:nowrap; }
         .ord-delivered  { background:#e6f9ef; color:var(--sage); font-size:0.72rem; font-weight:700; padding:0.2rem 0.65rem; border-radius:50px; border:1px solid #b8dfc9; white-space:nowrap; }
         .ord-cancelled  { background:#fff0ec; color:var(--ember); font-size:0.72rem; font-weight:700; padding:0.2rem 0.65rem; border-radius:50px; border:1px solid #ffc4b5; white-space:nowrap; }
-
         .btn-edit-sm {
             background:#fff8e6; color:#b07d00; border:1px solid #f0d080;
             border-radius:7px; padding:0.3rem 0.7rem;
@@ -320,73 +284,134 @@
         }
         .btn-del-sm:hover { background:var(--ember); color:#fff; border-color:var(--ember); }
 
-        /* ── MODAL — FULLY MOBILE FRIENDLY ── */
-        .modal-dialog {
-            margin:0.5rem auto;
-            display:flex;
-            flex-direction:column;
-            max-height:calc(100dvh - 1rem);
+        /* ════════════════════════════════════════════════
+           EDIT MODAL — CUSTOM IMPLEMENTATION
+           Built from scratch so Bootstrap cannot interfere.
+           The outer wrapper is the backdrop.
+           The inner .gc-modal-dialog is the sheet/dialog.
+        ════════════════════════════════════════════════ */
+        #editModalWrap {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1055;
+            background: rgba(0,0,0,0.52);
+            /* Bottom-sheet on mobile, centred on desktop */
+            align-items: flex-end;
+            justify-content: center;
         }
-        .modal-content {
-            border-radius:18px;
-            border:none;
-            display:flex;
-            flex-direction:column;
-            max-height:calc(100dvh - 1rem);
-            overflow:hidden;
+        #editModalWrap.open {
+            display: flex;
         }
-        .modal-hdr {
-            background:var(--forest);
-            padding:1.2rem 1.5rem;
-            border-radius:18px 18px 0 0;
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            flex-shrink:0;
+        @media (min-width: 600px) {
+            #editModalWrap { align-items: center; }
         }
-        .modal-hdr h5 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#fff; margin:0; }
-        .modal-hdr .btn-close { filter:invert(1); opacity:0.7; }
-        .modal-body {
-            padding:1.5rem;
-            overflow-y:auto;
-            -webkit-overflow-scrolling:touch;
-            overscroll-behavior:contain;
-            flex:1 1 auto;
+
+        .gc-modal-dialog {
+            background: var(--card);
+            width: 100%;
+            max-width: 780px;
+            /* Bottom sheet: rounded top corners, sits at bottom */
+            border-radius: 20px 20px 0 0;
+            /* KEY: fixed height with internal scroll */
+            max-height: 92dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* clip children to rounded corners */
         }
-        .modal-footer {
-            border-top:1px solid var(--border);
-            padding:1rem 1.5rem;
-            flex-shrink:0;
-            background:var(--card);
-            border-radius:0 0 18px 18px;
+        @media (min-width: 600px) {
+            .gc-modal-dialog {
+                border-radius: 18px;
+                margin: 1rem;
+                max-height: 90dvh;
+            }
         }
+
+        /* Header: never scrolls, always visible */
+        .gc-modal-head {
+            background: var(--forest);
+            padding: 1.1rem 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0; /* never compress */
+            border-radius: 20px 20px 0 0;
+        }
+        @media (min-width: 600px) {
+            .gc-modal-head { border-radius: 18px 18px 0 0; }
+        }
+        .gc-modal-head h5 {
+            font-family:'Syne',sans-serif; font-size:1rem;
+            font-weight:700; color:#fff; margin:0;
+        }
+        .gc-modal-close {
+            background: none; border: none; cursor: pointer;
+            color: rgba(255,255,255,0.7); font-size: 1.3rem;
+            line-height: 1; padding: 0.2rem 0.4rem;
+            border-radius: 6px; transition: background 0.15s;
+        }
+        .gc-modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+        /* Body: the ONLY scrolling area */
+        .gc-modal-body {
+            flex: 1 1 auto;           /* fill remaining space */
+            overflow-y: auto;         /* scroll here */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: 1.4rem;
+        }
+
+        /* Footer: never scrolls, always visible */
+        .gc-modal-foot {
+            flex-shrink: 0; /* never compress */
+            border-top: 1px solid var(--border);
+            padding: 0.9rem 1.4rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.6rem;
+            background: var(--card);
+        }
+
         .btn-modal-cancel {
-            background:var(--bg); color:var(--ink);
-            border:1px solid var(--border); border-radius:8px;
-            padding:0.55rem 1.2rem; font-size:0.85rem; font-weight:600;
-            cursor:pointer; font-family:'Instrument Sans',sans-serif;
+            background: var(--bg); color: var(--ink);
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 0.55rem 1.2rem; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; font-family:'Instrument Sans',sans-serif;
         }
         .btn-modal-submit {
-            background:var(--forest); color:#fff; border:none;
-            border-radius:8px; padding:0.55rem 1.5rem;
-            font-size:0.85rem; font-weight:600; cursor:pointer;
-            font-family:'Instrument Sans',sans-serif; transition:all 0.2s;
+            background: var(--forest); color: #fff; border: none;
+            border-radius: 8px; padding: 0.55rem 1.5rem;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            font-family:'Instrument Sans',sans-serif; transition: all 0.2s;
         }
-        .btn-modal-submit:hover { background:var(--leaf); }
+        .btn-modal-submit:hover { background: var(--leaf); }
 
+        /* Stack form columns on phones inside the modal */
+        @media (max-width: 576px) {
+            .gc-modal-body .col-md-5,
+            .gc-modal-body .col-md-3,
+            .gc-modal-body .col-md-2,
+            .gc-modal-body .col-6 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+            .gc-modal-body .img-upload-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+        }
+
+        /* ── OTHER ── */
         .link-all { font-size:0.8rem; color:var(--sage); font-weight:600; text-decoration:none; transition:color 0.2s; }
         .link-all:hover { color:var(--leaf); text-decoration:underline; }
-
         .img-upload-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.6rem; }
         .img-upload-grid label { font-size:0.7rem; color:var(--mist); font-weight:500; display:block; margin-bottom:0.2rem; }
-
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         .empty-state { text-align:center; padding:3rem 2rem; color:var(--mist); }
         .empty-state .icon { font-size:2.5rem; margin-bottom:0.8rem; }
         .empty-state p { font-size:0.88rem; }
         .text-muted-sm { font-size:0.75rem; color:var(--mist); }
 
-        /* ── MOBILE RESPONSIVE ── */
+        /* ── PAGE RESPONSIVE ── */
         @media (max-width: 991px) {
             .sidebar { transform:translateX(-100%); }
             .sidebar.open { transform:translateX(0); }
@@ -397,63 +422,17 @@
             .stats-grid { grid-template-columns:repeat(2,1fr); gap:0.8rem; }
             .stat-value { font-size:1.4rem; }
             .img-upload-grid { grid-template-columns:repeat(2,1fr); }
-            .btn-view-store span { display:none; }
-
-            /* Modal takes full width on tablet/mobile */
-            .modal-dialog {
-                margin:0.5rem;
-                max-width:calc(100% - 1rem);
-                max-height:calc(100dvh - 1rem);
-            }
         }
-
         @media (max-width: 576px) {
             .stats-grid { grid-template-columns:repeat(2,1fr); }
             .stat-card { padding:1rem; }
             .sc-head { flex-wrap:wrap; gap:0.5rem; }
             .sc-body { padding:1rem; }
-            .row.g-3 > [class*="col-md"] { flex:0 0 100%; max-width:100%; }
-            .img-upload-grid { grid-template-columns:repeat(2,1fr); }
-
-            /* Modal — full screen on small phones */
-            .modal-dialog {
-                margin:0;
-                max-width:100%;
-                max-height:100dvh;
-                height:100dvh;
-                border-radius:0;
-            }
-            .modal-content {
-                border-radius:0;
-                max-height:100dvh;
-                height:100dvh;
-            }
-            .modal-hdr {
-                border-radius:0;
-                padding:1rem;
-            }
-            .modal-body {
-                padding:1rem;
-            }
-            .modal-footer {
-                padding:0.75rem 1rem;
-                border-radius:0;
-            }
-
-            /* Stack all form cols on phones */
-            .modal-body .col-md-5,
-            .modal-body .col-md-3,
-            .modal-body .col-md-2,
-            .modal-body .col-6 {
-                flex:0 0 100%;
-                max-width:100%;
-            }
         }
     </style>
 </head>
 <body>
 
-<!-- Mobile overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <!-- ═══ SIDEBAR ═══ -->
@@ -470,7 +449,6 @@
         <a href="<%=request.getContextPath()%>/views/admin/adminanalytics.jsp" class="nav-item">
             <span class="icon">📈</span> Analytics
         </a>
-
         <div class="nav-section-label">Catalog</div>
         <a href="#products-section" class="nav-item" onclick="scrollToSection('products-section');closeSidebar()">
             <span class="icon">📦</span> Products
@@ -478,7 +456,6 @@
         <a href="#add-product-section" class="nav-item" onclick="scrollToSection('add-product-section');closeSidebar()">
             <span class="icon">➕</span> Add Product
         </a>
-
         <div class="nav-section-label">Operations</div>
         <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp" class="nav-item">
             <span class="icon">🧾</span> Orders
@@ -505,8 +482,6 @@
 
 <!-- ═══ MAIN ═══ -->
 <div class="main">
-
-    <!-- TOPBAR -->
     <div class="topbar">
         <div class="topbar-left">
             <button class="btn-menu" id="menuBtn" onclick="toggleSidebar()">
@@ -568,9 +543,7 @@
                 <table class="gc-table">
                     <thead>
                         <tr>
-                            <th>Order</th>
-                            <th>Customer</th>
-                            <th>Amount</th>
+                            <th>Order</th><th>Customer</th><th>Amount</th>
                             <th class="d-none d-md-table-cell">Payment</th>
                             <th class="d-none d-md-table-cell">Date</th>
                             <th>Status</th>
@@ -677,10 +650,7 @@
                 <table class="gc-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Stock</th>
+                            <th>ID</th><th>Product</th><th>Price</th><th>Stock</th>
                             <th class="d-none d-md-table-cell">Images</th>
                             <th>Actions</th>
                         </tr>
@@ -733,63 +703,69 @@
     </div>
 </div>
 
-<!-- ═══ EDIT MODAL ═══ -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-hdr">
-                <h5>✏ Edit Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="<%=request.getContextPath()%>/updateProduct" method="post" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <input type="hidden" name="productId" id="eId">
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-5 col-12">
-                            <label class="form-label">Product Name</label>
-                            <input type="text" name="name" id="eName" class="form-control" required>
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <label class="form-label">Price (₹)</label>
-                            <input type="number" step="0.01" min="0" name="price" id="ePrice" class="form-control" required>
-                        </div>
-                        <div class="col-md-2 col-6">
-                            <label class="form-label">Quantity</label>
-                            <input type="number" min="0" name="quantity" id="eQty" class="form-control" required>
-                        </div>
-                        <div class="col-md-2 col-12">
-                            <label class="form-label">Category</label>
-                            <select name="category" class="form-select">
-                                <option value="Vegetables">🥦 Vegetables</option>
-                                <option value="Fruits">🍎 Fruits</option>
-                                <option value="Dairy">🥛 Dairy</option>
-                                <option value="Grains">🌾 Grains</option>
-                                <option value="Herbs">🌿 Herbs</option>
-                                <option value="Other">📦 Other</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="2"></textarea>
-                    </div>
-                    <hr class="divider-line">
-                    <p class="form-label mb-2">Replace Images <small class="text-muted-sm">(leave empty to keep existing)</small></p>
-                    <div class="img-upload-grid">
-                        <% for(int i=1;i<=8;i++) { %>
-                        <div>
-                            <label>Image <%= i %></label>
-                            <input type="file" name="image<%= i %>" class="form-control" accept="image/*" style="font-size:0.75rem;padding:0.35rem 0.5rem">
-                        </div>
-                        <% } %>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-modal-submit">✓ Save Changes</button>
-                </div>
-            </form>
+<!-- ═══ EDIT MODAL (custom — no Bootstrap modal JS) ═══ -->
+<div id="editModalWrap" onclick="handleBackdropClick(event)">
+    <div class="gc-modal-dialog">
+
+        <!-- Fixed header -->
+        <div class="gc-modal-head">
+            <h5>✏ Edit Product</h5>
+            <button class="gc-modal-close" onclick="closeEditModal()">✕</button>
         </div>
+
+        <!-- Scrollable body -->
+        <form action="<%=request.getContextPath()%>/updateProduct" method="post" enctype="multipart/form-data"
+              style="display:contents">
+            <div class="gc-modal-body">
+                <input type="hidden" name="productId" id="eId">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-5 col-12">
+                        <label class="form-label">Product Name</label>
+                        <input type="text" name="name" id="eName" class="form-control" required>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <label class="form-label">Price (₹)</label>
+                        <input type="number" step="0.01" min="0" name="price" id="ePrice" class="form-control" required>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" min="0" name="quantity" id="eQty" class="form-control" required>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <label class="form-label">Category</label>
+                        <select name="category" id="eCat" class="form-select">
+                            <option value="Vegetables">🥦 Vegetables</option>
+                            <option value="Fruits">🍎 Fruits</option>
+                            <option value="Dairy">🥛 Dairy</option>
+                            <option value="Grains">🌾 Grains</option>
+                            <option value="Herbs">🌿 Herbs</option>
+                            <option value="Other">📦 Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" id="eDesc" class="form-control" rows="2"></textarea>
+                </div>
+                <hr class="divider-line">
+                <p class="form-label mb-2">Replace Images <small class="text-muted-sm">(leave empty to keep existing)</small></p>
+                <div class="img-upload-grid">
+                    <% for(int i=1;i<=8;i++) { %>
+                    <div>
+                        <label>Image <%= i %></label>
+                        <input type="file" name="image<%= i %>" class="form-control" accept="image/*" style="font-size:0.75rem;padding:0.35rem 0.5rem">
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Fixed footer -->
+            <div class="gc-modal-foot">
+                <button type="button" class="btn-modal-cancel" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn-modal-submit">✓ Save Changes</button>
+            </div>
+        </form>
+
     </div>
 </div>
 
@@ -799,33 +775,38 @@
         document.getElementById('eName').value  = name;
         document.getElementById('ePrice').value = price;
         document.getElementById('eQty').value   = qty;
-        new bootstrap.Modal(document.getElementById('editModal')).show();
+        document.getElementById('editModalWrap').classList.add('open');
+        document.body.style.overflow = 'hidden';
     }
+
+    function closeEditModal() {
+        document.getElementById('editModalWrap').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    /* Only close when clicking the dark backdrop, not the dialog itself */
+    function handleBackdropClick(e) {
+        if (e.target === document.getElementById('editModalWrap')) {
+            closeEditModal();
+        }
+    }
+
+    /* Escape key to close */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeEditModal();
+    });
 
     function scrollToSection(id) {
         document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
     }
-
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('sidebarOverlay').classList.toggle('show');
     }
-
     function closeSidebar() {
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('show');
     }
-
-    /* Lock body scroll when modal is open — prevents double-scroll on iOS */
-    var editModal = document.getElementById('editModal');
-    editModal.addEventListener('show.bs.modal', function () {
-        document.body.style.overflow = 'hidden';
-        document.body.style.touchAction = 'none';
-    });
-    editModal.addEventListener('hidden.bs.modal', function () {
-        document.body.style.overflow = '';
-        document.body.style.touchAction = '';
-    });
 </script>
 </body>
 </html>
