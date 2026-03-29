@@ -10,7 +10,6 @@
     Connection conn = DbConnection.getConnection();
     PreparedStatement ps; ResultSet rs;
 
-    // Avg Time on Page — confirmed working
     ps = conn.prepareStatement(
         "SELECT COALESCE(AVG(time_on_page),0) FROM user_events " +
         "WHERE event_type IN ('time_on_page','time_spent') AND time_on_page > 0");
@@ -18,7 +17,6 @@
     double avgTime = rs.next() ? rs.getDouble(1) : 0;
     rs.close(); ps.close();
 
-    // Orders — from orders table directly, confirmed working
     ps = conn.prepareStatement("SELECT COUNT(*) FROM orders");
     rs = ps.executeQuery();
     int totalOrders = rs.next() ? rs.getInt(1) : 0;
@@ -29,17 +27,34 @@
     int pendingOrders = rs.next() ? rs.getInt(1) : 0;
     rs.close(); ps.close();
 
-    // Top pages — confirmed working
+    ps = conn.prepareStatement("SELECT COUNT(*) FROM orders WHERE status='Delivered'");
+    rs = ps.executeQuery();
+    int deliveredOrders = rs.next() ? rs.getInt(1) : 0;
+    rs.close(); ps.close();
+
+    ps = conn.prepareStatement("SELECT COUNT(*) FROM orders WHERE status='Cancelled'");
+    rs = ps.executeQuery();
+    int cancelledOrders = rs.next() ? rs.getInt(1) : 0;
+    rs.close(); ps.close();
+
+    ps = conn.prepareStatement("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE status='Delivered'");
+    rs = ps.executeQuery();
+    double totalRevenue = rs.next() ? rs.getDouble(1) : 0;
+    rs.close(); ps.close();
+
     ps = conn.prepareStatement(
         "SELECT page_url, COUNT(*) as cnt FROM user_events " +
         "WHERE event_type='page_visit' AND page_url IS NOT NULL AND page_url!='' " +
-        "GROUP BY page_url ORDER BY cnt DESC LIMIT 6");
+        "GROUP BY page_url ORDER BY cnt DESC LIMIT 8");
     rs = ps.executeQuery();
     List<String[]> topPages = new ArrayList<>();
     while(rs.next()) topPages.add(new String[]{rs.getString("page_url"), String.valueOf(rs.getInt("cnt"))});
     rs.close(); ps.close();
 
     conn.close();
+
+    int completedOrders = totalOrders - pendingOrders - cancelledOrders;
+    if(completedOrders < 0) completedOrders = 0;
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,14 +65,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --forest:#0d2318; --sage:#2d8653; --mint:#4eca7f; --frost:#d4f5e4;
-            --bg:#f2f4f3; --ember:#e8603c; --sky:#3a7bd5;
-            --ink:#0a0f0c; --mist:#8ba898; --border:#e4e8e5; --card:#ffffff;
+            --forest:#0d2318; --pine:#153a25; --leaf:#1e5c38; --sage:#2d8653; --mint:#4eca7f;
+            --frost:#d4f5e4; --bg:#f2f4f3; --ember:#e8603c; --gold:#f0a843;
+            --sky:#3a7bd5; --ink:#0a0f0c; --mist:#8ba898; --border:#e4e8e5; --card:#ffffff;
         }
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
 
-        /* SIDEBAR */
+        /* ── SIDEBAR ── */
         .sidebar{width:230px;background:var(--forest);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:200;transition:transform 0.3s;}
         .sb-logo{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:0.6rem;border-bottom:1px solid rgba(255,255,255,0.07);}
         .sb-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--mint),var(--sage));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
@@ -80,8 +95,8 @@
         .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:199;}
         .sb-overlay.show{display:block;}
 
-        /* MAIN */
-        .main{margin-left:230px;min-height:100vh;}
+        /* ── MAIN ── */
+        .main{margin-left:230px;min-height:100vh;display:flex;flex-direction:column;}
         .topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0.85rem 1.8rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
         .tb-left{display:flex;align-items:center;gap:1rem;}
         .btn-menu{display:none;background:none;border:none;cursor:pointer;padding:0.3rem;border-radius:8px;color:var(--ink);}
@@ -89,47 +104,104 @@
         .btn-store{display:flex;align-items:center;gap:0.4rem;background:var(--frost);color:#1e5c38;border:1px solid rgba(30,92,56,0.15);border-radius:8px;padding:0.45rem 0.9rem;font-size:0.8rem;font-weight:600;text-decoration:none;transition:all 0.2s;}
         .btn-store:hover{background:#1e5c38;color:#fff;}
 
-        .content{padding:1.6rem;}
+        .content{padding:1.8rem;flex:1;display:flex;flex-direction:column;gap:1.4rem;}
 
-        /* STAT CARDS */
-        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.4rem;}
-        .sc{background:var(--card);border-radius:13px;padding:1.2rem 1.3rem;border:1px solid var(--border);display:flex;align-items:center;gap:0.9rem;}
-        .si{font-size:1.4rem;width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-        .si.y{background:#fffbe6;} .si.g{background:#e6f9ef;} .si.o{background:#fff0ec;}
-        .sv{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--ink);line-height:1;}
-        .sl{font-size:0.72rem;color:var(--mist);font-weight:500;margin-top:3px;}
+        /* ── HERO BANNER ── */
+        .hero{background:linear-gradient(135deg,var(--forest) 0%,var(--pine) 50%,#1a4a2e 100%);border-radius:20px;padding:2.2rem 2.4rem;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:220px;height:220px;background:radial-gradient(circle,rgba(78,202,127,0.15) 0%,transparent 70%);border-radius:50%;}
+        .hero::after{content:'';position:absolute;bottom:-60px;right:120px;width:160px;height:160px;background:radial-gradient(circle,rgba(78,202,127,0.08) 0%,transparent 70%);border-radius:50%;}
+        .hero-left{}
+        .hero-eyebrow{font-size:0.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mint);margin-bottom:0.5rem;}
+        .hero-title{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:0.6rem;}
+        .hero-sub{font-size:0.85rem;color:rgba(255,255,255,0.5);max-width:340px;line-height:1.5;}
+        .hero-right{display:flex;align-items:center;gap:2rem;position:relative;z-index:1;}
+        .hero-stat{text-align:center;}
+        .hero-stat-val{font-family:'Syne',sans-serif;font-size:2.6rem;font-weight:800;color:#fff;line-height:1;}
+        .hero-stat-val.green{color:var(--mint);}
+        .hero-stat-val.gold{color:var(--gold);}
+        .hero-stat-val.red{color:#ff8a70;}
+        .hero-stat-lbl{font-size:0.7rem;color:rgba(255,255,255,0.45);margin-top:0.3rem;font-weight:500;letter-spacing:0.5px;}
+        .hero-divider{width:1px;height:56px;background:rgba(255,255,255,0.12);}
 
-        /* CARDS */
-        .card{background:var(--card);border-radius:14px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:1.2rem;}
-        .ch{padding:0.9rem 1.3rem;border-bottom:1px solid var(--border);}
+        /* ── REVENUE STRIP ── */
+        .rev-strip{background:linear-gradient(90deg,var(--leaf),var(--sage));border-radius:16px;padding:1.4rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+        .rev-label{font-size:0.8rem;color:rgba(255,255,255,0.7);font-weight:500;letter-spacing:0.5px;}
+        .rev-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#fff;}
+        .rev-badge{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:50px;padding:0.35rem 1rem;font-size:0.78rem;font-weight:600;}
+
+        /* ── ORDER STATUS ROW ── */
+        .status-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+        .status-card{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:0.6rem;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+        .status-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+        .status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+        .status-card.all::before{background:linear-gradient(90deg,var(--mint),var(--sage));}
+        .status-card.pending::before{background:var(--gold);}
+        .status-card.done::before{background:var(--sage);}
+        .status-card.cancelled::before{background:var(--ember);}
+        .status-icon{font-size:1.5rem;}
+        .status-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--ink);}
+        .status-val.gold{color:#b07d00;}
+        .status-val.green{color:var(--sage);}
+        .status-val.red{color:var(--ember);}
+        .status-lbl{font-size:0.75rem;color:var(--mist);font-weight:500;}
+
+        /* ── BOTTOM ROW ── */
+        .bottom-row{display:grid;grid-template-columns:1.6fr 1fr;gap:1.4rem;flex:1;}
+
+        /* ── TOP PAGES ── */
+        .card{background:var(--card);border-radius:16px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.04);overflow:hidden;height:100%;}
+        .ch{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
         .ch-title{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;}
-        .cb{padding:1.2rem 1.3rem;}
-        .g2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem;}
+        .ch-badge{background:var(--frost);color:var(--leaf);font-size:0.68rem;font-weight:700;padding:0.18rem 0.6rem;border-radius:50px;}
+        .cb{padding:1.3rem 1.4rem;}
 
-        /* BARS */
-        .br{margin-bottom:0.85rem;}
-        .bl{display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px;font-weight:500;}
-        .bl span:last-child{color:var(--mist);}
-        .bt{height:7px;background:#f0f0f0;border-radius:50px;overflow:hidden;}
-        .bf{height:100%;border-radius:50px;background:linear-gradient(to right,var(--mint),var(--sage));}
+        .page-row{display:flex;align-items:center;gap:1rem;padding:0.7rem 0;border-bottom:1px solid #f5f7f5;}
+        .page-row:last-child{border-bottom:none;}
+        .page-rank{width:24px;height:24px;border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--mist);flex-shrink:0;}
+        .page-rank.top{background:linear-gradient(135deg,var(--mint),var(--sage));color:#fff;}
+        .page-info{flex:1;min-width:0;}
+        .page-url{font-size:0.8rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .page-bar-wrap{margin-top:4px;}
+        .page-bar-bg{height:5px;background:#f0f0f0;border-radius:50px;overflow:hidden;}
+        .page-bar-fill{height:100%;border-radius:50px;background:linear-gradient(to right,var(--mint),var(--sage));transition:width 1s ease;}
+        .page-count{font-size:0.78rem;font-weight:700;color:var(--sage);flex-shrink:0;min-width:32px;text-align:right;}
 
-        .empty{color:var(--mist);font-size:0.82rem;text-align:center;padding:2rem 0;}
+        /* ── AVG TIME CARD ── */
+        .time-card{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:1.8rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1rem;position:relative;overflow:hidden;}
+        .time-card::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(78,202,127,0.08) 0%,transparent 70%);border-radius:50%;}
+        .time-ring{width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--mint) 0deg, var(--sage) 200deg, #e8f5e9 200deg);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 12px rgba(78,202,127,0.07);position:relative;}
+        .time-ring-inner{width:100px;height:100px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+        .time-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--ink);line-height:1;}
+        .time-unit{font-size:0.65rem;color:var(--mist);font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+        .time-title{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;color:var(--ink);}
+        .time-sub{font-size:0.75rem;color:var(--mist);line-height:1.5;max-width:180px;}
+        .time-tip{background:var(--frost);border-radius:10px;padding:0.7rem 1rem;font-size:0.75rem;color:var(--leaf);font-weight:500;width:100%;line-height:1.4;}
 
-        /* Order summary bits */
-        .order-big{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--ink);line-height:1;}
-        .order-sub{color:var(--mist);font-size:0.83rem;margin-top:0.3rem;}
-        .order-chip{background:var(--frost);border-radius:8px;padding:0.4rem 1.1rem;font-size:0.8rem;color:#1e5c38;font-weight:600;margin-top:0.6rem;display:inline-block;}
+        .empty{color:var(--mist);font-size:0.82rem;text-align:center;padding:2.5rem 0;}
 
+        @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        .hero{animation:fadeUp 0.35s ease forwards;}
+        .rev-strip{animation:fadeUp 0.4s ease 0.05s forwards;opacity:0;}
+        .status-row{animation:fadeUp 0.4s ease 0.1s forwards;opacity:0;}
+        .bottom-row{animation:fadeUp 0.4s ease 0.15s forwards;opacity:0;}
+
+        @media(max-width:1100px){.bottom-row{grid-template-columns:1fr;}}
         @media(max-width:900px){
             .sidebar{transform:translateX(-100%);}
             .sidebar.open{transform:translateX(0);}
             .main{margin-left:0;}
             .btn-menu{display:flex;}
             .topbar{padding:0.85rem 1rem;}
-            .content{padding:1rem;}
-            .stats{grid-template-columns:1fr 1fr;}
-            .g2{grid-template-columns:1fr;}
-            .sv{font-size:1.25rem;}
+            .content{padding:1rem;gap:1rem;}
+            .hero{flex-direction:column;align-items:flex-start;gap:1.4rem;}
+            .hero-right{width:100%;justify-content:space-around;}
+            .hero-stat-val{font-size:2rem;}
+            .status-row{grid-template-columns:1fr 1fr;}
+            .rev-strip{flex-direction:column;align-items:flex-start;gap:0.5rem;}
+        }
+        @media(max-width:520px){
+            .status-row{grid-template-columns:1fr 1fr;}
+            .hero-title{font-size:1.3rem;}
         }
     </style>
 </head>
@@ -177,62 +249,123 @@
 
     <div class="content">
 
-        <!-- STAT CARDS: only confirmed working data -->
-        <div class="stats">
-            <div class="sc">
-                <div class="si y">⏱️</div>
-                <div>
-                    <div class="sv"><%= String.format("%.0f", avgTime) %>s</div>
-                    <div class="sl">Avg Time on Page</div>
-                </div>
+        <!-- HERO BANNER -->
+        <div class="hero">
+            <div class="hero-left">
+                <div class="hero-eyebrow">GreenCart · Store Overview</div>
+                <div class="hero-title">Your store at<br>a glance 🌿</div>
+                <div class="hero-sub">Real-time order data and page engagement metrics for your admin dashboard.</div>
             </div>
-            <div class="sc">
-                <div class="si g">📦</div>
-                <div>
-                    <div class="sv"><%= totalOrders %></div>
-                    <div class="sl">Total Orders</div>
+            <div class="hero-right">
+                <div class="hero-stat">
+                    <div class="hero-stat-val green"><%= totalOrders %></div>
+                    <div class="hero-stat-lbl">Total Orders</div>
                 </div>
-            </div>
-            <div class="sc">
-                <div class="si o">⏳</div>
-                <div>
-                    <div class="sv" style="color:var(--ember)"><%= pendingOrders %></div>
-                    <div class="sl">Pending Orders</div>
+                <div class="hero-divider"></div>
+                <div class="hero-stat">
+                    <div class="hero-stat-val gold"><%= pendingOrders %></div>
+                    <div class="hero-stat-lbl">Pending</div>
+                </div>
+                <div class="hero-divider"></div>
+                <div class="hero-stat">
+                    <div class="hero-stat-val"><%= String.format("%.0f", avgTime) %>s</div>
+                    <div class="hero-stat-lbl">Avg Time/Page</div>
                 </div>
             </div>
         </div>
 
-        <!-- TWO COLUMN: Top Pages + Order Summary -->
-        <div class="g2">
+        <!-- REVENUE STRIP -->
+        <div class="rev-strip">
+            <div>
+                <div class="rev-label">💰 Total Revenue from Delivered Orders</div>
+                <div class="rev-value">₹<%= String.format("%,.0f", totalRevenue) %></div>
+            </div>
+            <div class="rev-badge">✅ <%= deliveredOrders %> orders delivered</div>
+        </div>
+
+        <!-- ORDER STATUS CARDS -->
+        <div class="status-row">
+            <div class="status-card all">
+                <div class="status-icon">🧾</div>
+                <div class="status-val"><%= totalOrders %></div>
+                <div class="status-lbl">All Orders</div>
+            </div>
+            <div class="status-card pending">
+                <div class="status-icon">⏳</div>
+                <div class="status-val gold"><%= pendingOrders %></div>
+                <div class="status-lbl">Pending</div>
+            </div>
+            <div class="status-card done">
+                <div class="status-icon">✅</div>
+                <div class="status-val green"><%= deliveredOrders %></div>
+                <div class="status-lbl">Delivered</div>
+            </div>
+            <div class="status-card cancelled">
+                <div class="status-icon">❌</div>
+                <div class="status-val red"><%= cancelledOrders %></div>
+                <div class="status-lbl">Cancelled</div>
+            </div>
+        </div>
+
+        <!-- BOTTOM ROW: Top Pages + Avg Time -->
+        <div class="bottom-row">
+
+            <!-- TOP PAGES -->
             <div class="card">
-                <div class="ch"><div class="ch-title">📄 Most Visited Pages</div></div>
+                <div class="ch">
+                    <div class="ch-title">📄 Most Visited Pages</div>
+                    <span class="ch-badge"><%= topPages.size() %> pages tracked</span>
+                </div>
                 <div class="cb">
                     <% if(topPages.isEmpty()) { %>
-                        <p class="empty">No page visit data yet</p>
+                        <p class="empty">No page visit data recorded yet.</p>
                     <% } else {
                         int mx = Integer.parseInt(topPages.get(0)[1]);
-                        for(String[] pg : topPages) {
+                        for(int i=0; i<topPages.size(); i++) {
+                            String[] pg = topPages.get(i);
                             int c = Integer.parseInt(pg[1]);
                             int p = mx > 0 ? c * 100 / mx : 0;
+                            boolean isTop = i == 0;
                     %>
-                    <div class="br">
-                        <div class="bl"><span><%= pg[0] %></span><span><%= c %></span></div>
-                        <div class="bt"><div class="bf" style="width:<%= p %>%"></div></div>
+                    <div class="page-row">
+                        <div class="page-rank <%= isTop ? "top" : "" %>"><%= i+1 %></div>
+                        <div class="page-info">
+                            <div class="page-url"><%= pg[0] %></div>
+                            <div class="page-bar-wrap">
+                                <div class="page-bar-bg">
+                                    <div class="page-bar-fill" style="width:<%= p %>%<%= isTop ? ";background:linear-gradient(to right,var(--mint),var(--sage))" : i==1 ? ";background:linear-gradient(to right,#6dd4a0,var(--sage))" : "" %>"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-count"><%= c %></div>
                     </div>
                     <% }} %>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="ch"><div class="ch-title">📦 Order Summary</div></div>
-                <div class="cb" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;text-align:center;">
-                    <div class="order-big"><%= totalOrders %></div>
-                    <div class="order-sub">Total Orders Placed</div>
-                    <div class="order-chip">
-                        <%= pendingOrders %> Pending &nbsp;|&nbsp; <%= totalOrders - pendingOrders %> Completed
+            <!-- AVG TIME ON PAGE -->
+            <div class="time-card">
+                <div class="time-ring">
+                    <div class="time-ring-inner">
+                        <div class="time-val"><%= String.format("%.0f", avgTime) %></div>
+                        <div class="time-unit">seconds</div>
                     </div>
                 </div>
+                <div class="time-title">Avg. Time on Page</div>
+                <div class="time-sub">Average time users spend reading each page before navigating away.</div>
+                <div class="time-tip">
+                    <% if(avgTime >= 60) { %>
+                        🟢 Great engagement! Users are spending over a minute per page.
+                    <% } else if(avgTime >= 30) { %>
+                        🟡 Decent engagement. Aim for 60+ seconds with richer content.
+                    <% } else if(avgTime > 0) { %>
+                        🔴 Low dwell time. Consider improving page content or layout.
+                    <% } else { %>
+                        ⚪ No time-on-page data recorded yet.
+                    <% } %>
+                </div>
             </div>
+
         </div>
 
     </div>
