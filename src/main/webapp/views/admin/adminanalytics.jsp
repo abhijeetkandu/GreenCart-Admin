@@ -3,7 +3,7 @@
 <%
     String admin = (String) session.getAttribute("admin");
     if (admin == null) {
-        response.sendRedirect(request.getContextPath() + "/views/adminlogin.jsp");
+        response.sendRedirect(request.getContextPath() + "/views/admin/adminlogin.jsp");
         return;
     }
 
@@ -261,14 +261,14 @@
     </div>
     <nav class="sb-nav">
         <div class="sb-lbl">Overview</div>
-        <a href="<%=request.getContextPath()%>/views/adminhome.jsp" class="sb-item"><span>🏠</span> Dashboard</a>
-        <a href="<%=request.getContextPath()%>/views/adminanalytics.jsp" class="sb-item active"><span>📈</span> Analytics</a>
+        <a href="<%=request.getContextPath()%>/views/admin/adminhome.jsp" class="sb-item"><span>🏠</span> Dashboard</a>
+        <a href="<%=request.getContextPath()%>/views/admin/adminanalytics.jsp" class="sb-item active"><span>📈</span> Analytics</a>
         <div class="sb-lbl">Operations</div>
-        <a href="<%=request.getContextPath()%>/views/adminorders.jsp" class="sb-item">
+        <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp" class="sb-item">
             <span>🧾</span> Orders
             <%if(pendingOrders>0){%><span class="sb-badge"><%=pendingOrders%></span><%}%>
         </a>
-        <a href="<%=request.getContextPath()%>/views/adminusers.jsp" class="sb-item"><span>👥</span> Customers</a>
+        <a href="<%=request.getContextPath()%>/views/admin/adminusers.jsp" class="sb-item"><span>👥</span> Customers</a>
     </nav>
     <div class="sb-foot">
         <div class="sb-user">

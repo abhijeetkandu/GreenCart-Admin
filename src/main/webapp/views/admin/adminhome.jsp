@@ -4,7 +4,6 @@
 <%
     String admin = (String) session.getAttribute("admin");
     if (admin == null) {
-        // ✅ FIXED PATH
         response.sendRedirect(request.getContextPath() + "/views/admin/adminlogin.jsp");
         return;
     }
@@ -321,13 +320,46 @@
         }
         .btn-del-sm:hover { background:var(--ember); color:#fff; border-color:var(--ember); }
 
-        /* ── MODAL ── */
-        .modal-content { border-radius:18px; border:none; }
-        .modal-hdr { background:var(--forest); padding:1.2rem 1.5rem; border-radius:18px 18px 0 0; display:flex; align-items:center; justify-content:space-between; }
+        /* ── MODAL — FULLY MOBILE FRIENDLY ── */
+        .modal-dialog {
+            margin:0.5rem auto;
+            display:flex;
+            flex-direction:column;
+            max-height:calc(100dvh - 1rem);
+        }
+        .modal-content {
+            border-radius:18px;
+            border:none;
+            display:flex;
+            flex-direction:column;
+            max-height:calc(100dvh - 1rem);
+            overflow:hidden;
+        }
+        .modal-hdr {
+            background:var(--forest);
+            padding:1.2rem 1.5rem;
+            border-radius:18px 18px 0 0;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            flex-shrink:0;
+        }
         .modal-hdr h5 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#fff; margin:0; }
         .modal-hdr .btn-close { filter:invert(1); opacity:0.7; }
-        .modal-body { padding:1.5rem; }
-        .modal-footer { border-top:1px solid var(--border); padding:1rem 1.5rem; }
+        .modal-body {
+            padding:1.5rem;
+            overflow-y:auto;
+            -webkit-overflow-scrolling:touch;
+            overscroll-behavior:contain;
+            flex:1 1 auto;
+        }
+        .modal-footer {
+            border-top:1px solid var(--border);
+            padding:1rem 1.5rem;
+            flex-shrink:0;
+            background:var(--card);
+            border-radius:0 0 18px 18px;
+        }
         .btn-modal-cancel {
             background:var(--bg); color:var(--ink);
             border:1px solid var(--border); border-radius:8px;
@@ -366,6 +398,13 @@
             .stat-value { font-size:1.4rem; }
             .img-upload-grid { grid-template-columns:repeat(2,1fr); }
             .btn-view-store span { display:none; }
+
+            /* Modal takes full width on tablet/mobile */
+            .modal-dialog {
+                margin:0.5rem;
+                max-width:calc(100% - 1rem);
+                max-height:calc(100dvh - 1rem);
+            }
         }
 
         @media (max-width: 576px) {
@@ -373,10 +412,42 @@
             .stat-card { padding:1rem; }
             .sc-head { flex-wrap:wrap; gap:0.5rem; }
             .sc-body { padding:1rem; }
-            /* Stack form fields on mobile */
             .row.g-3 > [class*="col-md"] { flex:0 0 100%; max-width:100%; }
             .img-upload-grid { grid-template-columns:repeat(2,1fr); }
-            .modal-dialog { margin:0.5rem; }
+
+            /* Modal — full screen on small phones */
+            .modal-dialog {
+                margin:0;
+                max-width:100%;
+                max-height:100dvh;
+                height:100dvh;
+                border-radius:0;
+            }
+            .modal-content {
+                border-radius:0;
+                max-height:100dvh;
+                height:100dvh;
+            }
+            .modal-hdr {
+                border-radius:0;
+                padding:1rem;
+            }
+            .modal-body {
+                padding:1rem;
+            }
+            .modal-footer {
+                padding:0.75rem 1rem;
+                border-radius:0;
+            }
+
+            /* Stack all form cols on phones */
+            .modal-body .col-md-5,
+            .modal-body .col-md-3,
+            .modal-body .col-md-2,
+            .modal-body .col-6 {
+                flex:0 0 100%;
+                max-width:100%;
+            }
         }
     </style>
 </head>
@@ -393,11 +464,9 @@
     </div>
     <nav class="sidebar-nav">
         <div class="nav-section-label">Overview</div>
-        <%-- ✅ FIXED PATH --%>
         <a href="<%=request.getContextPath()%>/views/admin/adminhome.jsp" class="nav-item active">
             <span class="icon">📊</span> Dashboard
         </a>
-        <%-- ✅ FIXED PATH --%>
         <a href="<%=request.getContextPath()%>/views/admin/adminanalytics.jsp" class="nav-item">
             <span class="icon">📈</span> Analytics
         </a>
@@ -411,12 +480,10 @@
         </a>
 
         <div class="nav-section-label">Operations</div>
-        <%-- ✅ FIXED PATH --%>
         <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp" class="nav-item">
             <span class="icon">🧾</span> Orders
             <% if(pendingOrders>0) { %><span class="nav-badge"><%= pendingOrders %></span><% } %>
         </a>
-        <%-- ✅ FIXED PATH --%>
         <a href="<%=request.getContextPath()%>/views/admin/adminusers.jsp" class="nav-item">
             <span class="icon">👥</span> Customers
         </a>
@@ -449,8 +516,6 @@
             </button>
             <div class="topbar-title">Dashboard Overview</div>
         </div>
-
-
     </div>
 
     <div class="page-content">
@@ -497,7 +562,6 @@
         <div class="sc" style="animation-delay:0.1s">
             <div class="sc-head">
                 <div class="sc-title">🧾 Recent Orders</div>
-                <%-- ✅ FIXED PATH --%>
                 <a href="<%=request.getContextPath()%>/views/admin/adminorders.jsp" class="link-all">View all →</a>
             </div>
             <div style="overflow-x:auto">
@@ -669,9 +733,9 @@
     </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- ═══ EDIT MODAL ═══ -->
 <div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-hdr">
                 <h5>✏ Edit Product</h5>
@@ -730,24 +794,38 @@
 </div>
 
 <script>
-    function openEdit(id,name,price,qty) {
+    function openEdit(id, name, price, qty) {
         document.getElementById('eId').value    = id;
         document.getElementById('eName').value  = name;
         document.getElementById('ePrice').value = price;
         document.getElementById('eQty').value   = qty;
         new bootstrap.Modal(document.getElementById('editModal')).show();
     }
+
     function scrollToSection(id) {
-        document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
+        document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
     }
+
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('sidebarOverlay').classList.toggle('show');
     }
+
     function closeSidebar() {
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('show');
     }
+
+    /* Lock body scroll when modal is open — prevents double-scroll on iOS */
+    var editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function () {
+        document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+    });
+    editModal.addEventListener('hidden.bs.modal', function () {
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+    });
 </script>
 </body>
 </html>
